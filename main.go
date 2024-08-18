@@ -1,7 +1,20 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+
+	"github.com/RowMur/gql/lexer"
+)
+
+const filePath = "./example-gql/query.gql"
 
 func main() {
-	fmt.Println("Hello, World!")
+	file, err := os.ReadFile(filePath)
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return
+	}
+
+	lexer.Tokenize(file)
 }
