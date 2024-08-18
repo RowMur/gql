@@ -16,7 +16,7 @@ type Tokenizer interface {
 func Tokenize(input []byte) []Token {
 	var tokens []Token
 	runes := []rune(string(input))
-	tokenizers := []Tokenizer{SourceCharacter{}}
+	tokenizers := []Tokenizer{WhiteSpace{}, UnicodeBOM{}, SourceCharacter{}}
 
 	for len(runes) > 0 {
 		for _, tokenizer := range tokenizers {
@@ -28,6 +28,7 @@ func Tokenize(input []byte) []Token {
 			tokens = append(tokens, *token)
 			runes = runes[size:]
 			fmt.Printf("%s: %q\n", token.Name, token.Value)
+			break
 		}
 	}
 
