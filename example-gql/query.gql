@@ -1,6 +1,6 @@
 # This is a query for the Star Wars API
 query Query {
-  allFilms {
+  allFilms(q: "star wars", first: 5) {
     films {
       title # I want to get the title of the film
       director
