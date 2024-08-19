@@ -2,6 +2,7 @@
 query Query {
   allFilms(q: "star wars", first: 5) {
     films {
+      __typename
       title # I want to get the title of the film
       director
       releaseDate
