@@ -16,5 +16,9 @@ func main() {
 		return
 	}
 
-	lexer.Tokenize(file)
+	_, err = lexer.Tokenize(file)
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return
+	}
 }

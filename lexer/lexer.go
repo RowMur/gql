@@ -10,17 +10,22 @@ type Token struct {
 }
 
 type Tokenizer interface {
-	Test(runes *[]rune) (*Token, int)
+	Test(runes *[]rune) (*Token, int, error)
 }
 
-func Tokenize(input []byte) []Token {
+func Tokenize(input []byte) ([]Token, error) {
 	var tokens []Token
 	runes := []rune(string(input))
-	tokenizers := []Tokenizer{WhiteSpace{}, UnicodeBOM{}, SourceCharacter{}}
+	tokenizers := []Tokenizer{LineTerminator{}, WhiteSpace{}, UnicodeBOM{}, SourceCharacter{}}
 
-	for len(runes) > 0 {
+	var tokenizingError error
+	for len(runes) > 0 && tokenizingError == nil {
 		for _, tokenizer := range tokenizers {
-			token, size := tokenizer.Test(&runes)
+			token, size, err := tokenizer.Test(&runes)
+			if err != nil {
+				tokenizingError = err
+				break
+			}
 			if token == nil {
 				continue
 			}
@@ -32,5 +37,5 @@ func Tokenize(input []byte) []Token {
 		}
 	}
 
-	return tokens
+	return tokens, tokenizingError
 }
