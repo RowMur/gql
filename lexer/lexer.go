@@ -16,7 +16,7 @@ type Tokenizer interface {
 func Tokenize(input []byte) ([]Token, error) {
 	var tokens []Token
 	runes := []rune(string(input))
-	tokenizers := []Tokenizer{Comma{}, Comment{}, LineTerminator{}, WhiteSpace{}, UnicodeBOM{}, SourceCharacter{}}
+	tokenizers := []Tokenizer{Punctuator{}, Comma{}, Comment{}, LineTerminator{}, WhiteSpace{}, UnicodeBOM{}, SourceCharacter{}}
 
 	var tokenizingError error
 	for len(runes) > 0 && tokenizingError == nil {
