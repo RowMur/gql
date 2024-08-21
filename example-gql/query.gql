@@ -1,6 +1,12 @@
 # This is a query for the Star Wars API
 query Query {
-  allFilms(q: "star wars", first: 10, someVar: 12345.6789e25) {
+  allFilms(
+    q: "star wars"
+    first: 10
+    someVar: 12345.6789e25
+    stringVar: """
+    """
+  ) {
     films {
       __typename
       title # I want to get the title of the film

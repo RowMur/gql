@@ -1,8 +1,6 @@
 package lexer
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type Token struct {
 	Name  string
@@ -16,7 +14,7 @@ type Tokenizer interface {
 func Tokenize(input []byte) ([]Token, error) {
 	var tokens []Token
 	runes := []rune(string(input))
-	tokenizers := []Tokenizer{Punctuator{}, Name{}, IntValue{}, FloatValue{}, Comma{}, Comment{}, LineTerminator{}, WhiteSpace{}, UnicodeBOM{}, SourceCharacter{}}
+	tokenizers := []Tokenizer{Punctuator{}, Name{}, IntValue{}, FloatValue{}, StringValue{}, Comma{}, Comment{}, LineTerminator{}, WhiteSpace{}, UnicodeBOM{}, SourceCharacter{}}
 
 	var tokenizingError error
 	for len(runes) > 0 && tokenizingError == nil {
