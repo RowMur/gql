@@ -1,6 +1,9 @@
 package lexer
 
-import "fmt"
+import (
+	"fmt"
+	"slices"
+)
 
 type Token struct {
 	Name  string
@@ -9,6 +12,14 @@ type Token struct {
 
 type Tokenizer interface {
 	Test(runes *[]rune) (*Token, int, error)
+}
+
+var lexicalTokens = []string{
+	"Punctuator",
+	"Name",
+	"IntValue",
+	"FloatValue",
+	"StringValue",
 }
 
 func Tokenize(input []byte) ([]Token, error) {
@@ -28,9 +39,13 @@ func Tokenize(input []byte) ([]Token, error) {
 				continue
 			}
 
-			tokens = append(tokens, *token)
+			isLexicalToken := slices.Index[[]string, string](lexicalTokens, token.Name)
+			if isLexicalToken != -1 {
+				tokens = append(tokens, *token)
+				fmt.Printf("%s: %q\n", token.Name, token.Value)
+			}
+
 			runes = runes[size:]
-			fmt.Printf("%s: %q\n", token.Name, token.Value)
 			break
 		}
 	}
