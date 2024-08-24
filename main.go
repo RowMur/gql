@@ -2,23 +2,13 @@ package main
 
 import (
 	"fmt"
-	"os"
 
-	"github.com/RowMur/gql/lexer"
+	"github.com/RowMur/gql/editor"
 )
 
-const filePath = "./example-gql/query.gql"
-
 func main() {
-	file, err := os.ReadFile(filePath)
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-		return
-	}
+	editor := editor.NewEditor()
+	content := editor.Run()
 
-	_, err = lexer.Tokenize(file)
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-		return
-	}
+	fmt.Println(*content)
 }
