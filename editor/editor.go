@@ -84,7 +84,7 @@ func mainLayout(g *gocui.Gui) error {
 		g.SetViewOnTop("main")
 	}
 
-	lv, err := g.SetView("lexer", 2*maxX/3, 0, maxX, maxY-1)
+	lv, err := g.SetView("lexer", 2*maxX/3, 0, maxX-1, maxY-1)
 	if err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
