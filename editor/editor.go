@@ -1,8 +1,10 @@
 package editor
 
 import (
+	"fmt"
 	"log"
 
+	"github.com/RowMur/gql/lexer"
 	"github.com/jroimartin/gocui"
 )
 
@@ -28,9 +30,17 @@ func (e *Editor) Run() *string {
 	g.Cursor = true
 	g.SelFgColor = gocui.ColorGreen
 
-	g.SetManagerFunc(layout)
+	g.SetManagerFunc(mainLayout)
 
 	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
+		log.Panicln(err)
+	}
+
+	shouldQuery := false
+	if err := g.SetKeybinding("", gocui.KeyCtrlQ, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+		shouldQuery = true
+		return quit(g, v)
+	}); err != nil {
 		log.Panicln(err)
 	}
 
@@ -42,27 +52,56 @@ func (e *Editor) Run() *string {
 	if err != nil {
 		log.Panicln(err)
 	}
-	content := mainView.Buffer()
+
+	_, err = g.View("lexer")
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	content := ""
+	if shouldQuery {
+		content = mainView.Buffer()
+	}
 
 	return &content
 }
 
-func layout(g *gocui.Gui) error {
+func mainLayout(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
-	v, err := g.SetView("main", 0, 0, maxX-1, maxY-1)
+	mv, err := g.SetView("main", 0, 0, 2*maxX/3-1, maxY-1)
 	if err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
-		v.Title = " query "
-		v.Editable = true
-		v.Wrap = true
+		mv.Title = " query "
+		mv.Editable = true
+		mv.Wrap = true
 
 		if _, err := g.SetCurrentView("main"); err != nil {
 			log.Panicln(err)
 		}
 
 		g.SetViewOnTop("main")
+	}
+
+	lv, err := g.SetView("lexer", 2*maxX/3, 0, maxX, maxY-1)
+	if err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+		lv.Title = " lexer output "
+		lv.Editable = false
+		lv.Wrap = true
+		lv.Autoscroll = true
+	}
+
+	tokens, err := lexer.Tokenize([]byte(mv.Buffer()))
+	if err != nil {
+		return err
+	}
+	lv.Clear()
+	for _, token := range tokens {
+		fmt.Fprintf(lv, "%s - %s\n", token.Name, token.Value)
 	}
 
 	return nil

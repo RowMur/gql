@@ -1,7 +1,6 @@
 package lexer
 
 import (
-	"fmt"
 	"slices"
 )
 
@@ -42,7 +41,6 @@ func Tokenize(input []byte) ([]Token, error) {
 			isLexicalToken := slices.Index[[]string, string](lexicalTokens, token.Name)
 			if isLexicalToken != -1 {
 				tokens = append(tokens, *token)
-				fmt.Printf("%s: %q\n", token.Name, token.Value)
 			}
 
 			runes = runes[size:]
