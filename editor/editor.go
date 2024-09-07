@@ -95,11 +95,21 @@ func mainLayout(g *gocui.Gui) error {
 		lv.Autoscroll = true
 	}
 
-	tokens, err := lexer.Tokenize([]byte(mv.Buffer()))
-	if err != nil {
-		return err
-	}
 	lv.Clear()
+	prevText := mv.Buffer()
+	tokens, err := lexer.Tokenize([]byte(prevText))
+	mv.Clear()
+	mv.Write([]byte(prevText))
+	if err != nil {
+		if _, ok := err.(lexer.UnexpectedTokenError); ok {
+			mv.FgColor = gocui.ColorRed
+		}
+		fmt.Fprint(lv, err.Error())
+		return nil
+	} else {
+		mv.FgColor = gocui.ColorDefault
+	}
+
 	for _, token := range tokens {
 		fmt.Fprintf(lv, "%s - %s\n", token.Name, token.Value)
 	}

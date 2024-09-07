@@ -3,11 +3,11 @@ package lexer
 import "strconv"
 
 type UnexpectedTokenError struct {
-	token string
-	col   int
-	row   int
+	Token string
+	Col   int
+	Row   int
 }
 
 func (e UnexpectedTokenError) Error() string {
-	return "Unexpected token " + e.token + " at " + strconv.Itoa(e.col) + ":" + strconv.Itoa(e.row)
+	return "Unexpected token " + e.Token + " at " + strconv.Itoa(e.Col) + ":" + strconv.Itoa(e.Row)
 }
