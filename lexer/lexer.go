@@ -22,20 +22,33 @@ var lexicalTokens = []string{
 }
 
 func Tokenize(input []byte) ([]Token, error) {
-	var tokens []Token
+	tokens := []Token{}
 	runes := []rune(string(input))
-	tokenizers := []Tokenizer{Punctuator{}, Name{}, IntValue{}, FloatValue{}, StringValue{}, Comma{}, Comment{}, LineTerminator{}, WhiteSpace{}, UnicodeBOM{}, SourceCharacter{}}
+	tokenizers := []Tokenizer{Punctuator{}, Name{}, IntValue{}, FloatValue{}, StringValue{}, Comma{}, Comment{}, LineTerminator{}, WhiteSpace{}, UnicodeBOM{}}
 
 	var tokenizingError error
+	currentRow := 1
+	currentCol := 1
+	var lineTerminatorIndex = 7
 	for len(runes) > 0 && tokenizingError == nil {
-		for _, tokenizer := range tokenizers {
+		for i, tokenizer := range tokenizers {
 			token, size, err := tokenizer.Test(&runes)
 			if err != nil {
 				tokenizingError = err
 				break
 			}
 			if token == nil {
+				if i == len(tokenizers)-1 {
+					return nil, UnexpectedTokenError{string(runes[0]), currentRow, currentCol}
+				}
 				continue
+			}
+
+			if i == lineTerminatorIndex {
+				currentRow++
+				currentCol = 1
+			} else {
+				currentCol += size
 			}
 
 			isLexicalToken := slices.Index[[]string, string](lexicalTokens, token.Name)

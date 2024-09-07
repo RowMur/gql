@@ -8,6 +8,9 @@ import (
 type SourceCharacter struct{}
 
 func (sc SourceCharacter) Test(runes *[]rune) (*Token, int, error) {
+	if len(*runes) == 0 {
+		return nil, 0, nil
+	}
 	tab := rune(0x09)
 	LF := rune(0x0A)
 	CR := rune(0x0D)

@@ -10,7 +10,7 @@ type StringValue struct{}
 func (sv StringValue) Test(runes *[]rune) (*Token, int, error) {
 	if strings.HasPrefix(string(*runes), "\"\"\"") {
 		remainingRunes := (*runes)[3:]
-		blockStringCharToken, _, _ := BlockStringCharacter{}.Test(&remainingRunes)
+		blockStringCharToken, size, _ := BlockStringCharacter{}.Test(&remainingRunes)
 		if blockStringCharToken == nil {
 			if strings.HasPrefix(string(remainingRunes), "\"\"\"") {
 				return &Token{Name: "StringValue", Value: "\"\"\"\"\"\""}, 6, nil
@@ -19,6 +19,7 @@ func (sv StringValue) Test(runes *[]rune) (*Token, int, error) {
 			}
 		}
 
+		remainingRunes = remainingRunes[size:]
 		runesInString := []rune("\"\"\"" + blockStringCharToken.Value)
 		for len(remainingRunes) > 0 {
 			blockStringCharToken, size, _ := BlockStringCharacter{}.Test(&remainingRunes)
@@ -31,7 +32,7 @@ func (sv StringValue) Test(runes *[]rune) (*Token, int, error) {
 		}
 
 		if strings.HasPrefix(string(remainingRunes), "\"\"\"") {
-			return &Token{Name: "StringValue", Value: string(runesInString) + "\"\"\""}, 3 + len(runesInString) + 3, nil
+			return &Token{Name: "StringValue", Value: string(runesInString) + "\"\"\""}, len(runesInString) + 3, nil
 		}
 
 		return nil, 0, nil
@@ -57,9 +58,13 @@ func (sv StringValue) Test(runes *[]rune) (*Token, int, error) {
 		remainingRunes = remainingRunes[size:]
 	}
 
+	if len(remainingRunes) == 0 {
+		return nil, 0, nil
+	}
+
 	if remainingRunes[0] == '"' {
 		runesInString = append(runesInString, '"')
-		return &Token{Name: "StringValue", Value: string(runesInString)}, len(runesInString) + 1, nil
+		return &Token{Name: "StringValue", Value: string(runesInString)}, len(runesInString), nil
 	}
 
 	return nil, 0, nil
@@ -143,8 +148,9 @@ func (bsc BlockStringCharacter) Test(runes *[]rune) (*Token, int, error) {
 	if strings.HasPrefix(remaingRunesAsString, "\"\"\"") {
 		return nil, 0, nil
 	}
-	if strings.HasPrefix(remaingRunesAsString, "\\\"\"\"") {
-		return nil, 0, nil
+	escapedMultiLineString := `\"""`
+	if strings.HasPrefix(remaingRunesAsString, escapedMultiLineString) {
+		return &Token{Name: "BlockStringCharacter", Value: escapedMultiLineString}, len(escapedMultiLineString), nil
 	}
 
 	return &Token{Name: "BlockStringCharacter", Value: sourceCharacterToken.Value}, 1, nil

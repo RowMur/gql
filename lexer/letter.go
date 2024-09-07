@@ -3,6 +3,10 @@ package lexer
 type Letter struct{}
 
 func (l Letter) Test(runes *[]rune) (*Token, int, error) {
+	if len(*runes) == 0 {
+		return nil, 0, nil
+	}
+
 	nextRune := (*runes)[0]
 
 	if nextRune >= rune(0x41) && nextRune <= rune(0x5A) {

@@ -47,6 +47,9 @@ func (fv FloatValue) Test(runes *[]rune) (*Token, int, error) {
 
 	runesInFloatValue = append(runesInFloatValue, []rune(fractionalToken.Value)...)
 	remaingRunes = remaingRunes[lengthOfFractionalPart:]
+	if len(remaingRunes) == 0 {
+		return &Token{Name: "FloatValue", Value: string(runesInFloatValue)}, len(runesInFloatValue), nil
+	}
 	nextRune := remaingRunes[0]
 
 	exponentToken, lengthOfExponentPart, _ = ExponentPart{}.Test(&remaingRunes)

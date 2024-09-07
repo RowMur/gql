@@ -9,6 +9,10 @@ func (iv IntValue) Test(runes *[]rune) (*Token, int, error) {
 	}
 
 	remainingRunes := (*runes)[size:]
+	if len(remainingRunes) == 0 {
+		return &Token{Name: "IntValue", Value: token.Value}, size, nil
+	}
+
 	nextRune := remainingRunes[0]
 	dotRune := rune(0x2E)
 	if nextRune == dotRune {
