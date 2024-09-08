@@ -1,0 +1,14 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+jobs:
+  test:
+    uses: ./test.yml
+    secrets: inherit
+  benchmark:
+    uses: ./benchmark.yml
+    secrets: inherit
+    needs: [test]
