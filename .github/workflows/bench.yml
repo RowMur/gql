@@ -39,4 +39,16 @@ jobs:
               go install golang.org/x/perf/cmd/benchstat
           fi
           go test -run=XXX -bench=. -count=10  ./... >bench-$BRANCH.txt
-          benchstat bench-master.txt bench-$BRANCH.txt
+          benchstat bench-master.txt bench-$BRANCH.txt >benchstat.txt
+      - name: Comment benchmark results
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const data = fs.readFileSync('benchstat.txt', 'utf8');
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: '```' + data + '```'
+            });
