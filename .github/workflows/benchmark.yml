@@ -25,7 +25,7 @@ jobs:
         with:
           path: |
             bench-master.txt
-          key: ${{ runner.os }}-bench-master
+          key: ${{ runner.os }}-bench-master-${{ (github.event.pull_request.base.sha != github.event.after) && github.event.pull_request.base.sha || github.event.after }}
       - name: Benchmark
         env:
           BRANCH: ${{ github.head_ref || github.ref_name }}
