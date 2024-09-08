@@ -12,4 +12,4 @@ jobs:
       - name: Install deps
         run: go get .
       - name: Run tests
-        run: go test
+        run: go test ./...
