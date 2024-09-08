@@ -1,0 +1,15 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+    secrets: inherit
+  benchmark:
+    uses: ./.github/workflows/benchmark.yml
+    secrets: inherit
+    needs: [test]
