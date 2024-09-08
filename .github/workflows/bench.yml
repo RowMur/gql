@@ -30,11 +30,13 @@ jobs:
             bench-master.txt
           key: ${{ runner.os }}-bench-master
       - name: Benchmark
+        env:
+          BRANCH: ${{ github.head_ref || github.ref_name }}
         run: |
           if ! command -v benchstat &> /dev/null
           then
               go get golang.org/x/perf/cmd/benchstat
               go install golang.org/x/perf/cmd/benchstat
           fi
-          go test -run=XXX -bench=. -count=10  ./... >bench-${{ github.head_ref || github.ref_name }}.txt
-          benchstat bench-master.txt bench-new.txt
+          go test -run=XXX -bench=. -count=10  ./... >bench-$BRANCH.txt
+          benchstat bench-master.txt bench-$BRANCH.txt
